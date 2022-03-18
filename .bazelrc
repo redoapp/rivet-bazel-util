@@ -1,0 +1,3 @@
+import %workspace%/tools/deleted.bazelrc
+
+build --experimental_worker_allow_json_protocol

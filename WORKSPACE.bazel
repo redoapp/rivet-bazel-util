@@ -1,0 +1,142 @@
+workspace(name = "bazel_watcher_2")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# Python
+PYTHON_VERSION = "0.6.0"
+
+http_archive(
+    name = "rules_python",
+    sha256 = "a30abdfc7126d497a7698c29c46ea9901c6392d6ed315171a6df5ce433aa4502",
+    strip_prefix = "rules_python-%s" % PYTHON_VERSION,
+    url = "https://github.com/bazelbuild/rules_python/archive/%s.tar.gz" % PYTHON_VERSION,
+)
+
+# Skylib
+
+SKYLIB_VERSION = "16de038c484145363340eeaf0e97a0c9889a931b"
+
+http_archive(
+    name = "bazel_skylib",
+    sha256 = "96e0cd3f731f0caef9e9919aa119ecc6dace36b149c2f47e40aa50587790402b",
+    strip_prefix = "bazel-skylib-%s" % SKYLIB_VERSION,
+    urls = ["https://github.com/bazelbuild/bazel-skylib/archive/%s.tar.gz" % SKYLIB_VERSION],
+)
+
+# Go
+GO_VERSION = "v0.24.5"
+
+http_archive(
+    name = "io_bazel_rules_go",
+    sha256 = "d1ffd055969c8f8d431e2d439813e42326961d0942bdf734d2c95dc30c369566",
+    url = "https://github.com/bazelbuild/rules_go/releases/download/%s/rules_go-%s.tar.gz" % (GO_VERSION, GO_VERSION),
+)
+
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+
+go_rules_dependencies()
+
+go_register_toolchains()
+
+# Protobuf
+http_archive(
+    name = "com_google_protobuf",
+    sha256 = "9b4ee22c250fe31b16f1a24d61467e40780a3fbb9b91c3b65be2a376ed913a1a",
+    strip_prefix = "protobuf-3.13.0",
+    url = "https://github.com/protocolbuffers/protobuf/archive/v3.13.0.tar.gz",
+)
+
+load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+
+protobuf_deps()
+
+# Protobuf
+
+PROTO_GRPC_VERSION = "2.0.0"
+
+http_archive(
+    name = "rules_proto_grpc",
+    sha256 = "d771584bbff98698e7cb3cb31c132ee206a972569f4dc8b65acbdd934d156b33",
+    strip_prefix = "rules_proto_grpc-%s" % PROTO_GRPC_VERSION,
+    urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/%s.tar.gz" % PROTO_GRPC_VERSION],
+)
+
+load("@rules_proto_grpc//:repositories.bzl", "rules_proto_grpc_repos", "rules_proto_grpc_toolchains")
+
+rules_proto_grpc_toolchains()
+
+rules_proto_grpc_repos()
+
+# Buildtools
+
+BUILDTOOLS_VERSION = "3.5.0"
+
+http_archive(
+    name = "com_github_bazelbuild_buildtools",
+    sha256 = "f5b666935a827bc2b6e2ca86ea56c796d47f2821c2ff30452d270e51c2a49708",
+    strip_prefix = "buildtools-%s" % BUILDTOOLS_VERSION,
+    url = "https://github.com/bazelbuild/buildtools/archive/%s.zip" % BUILDTOOLS_VERSION,
+)
+
+load("@com_github_bazelbuild_buildtools//buildifier:deps.bzl", "buildifier_dependencies")
+
+buildifier_dependencies()
+
+# File
+
+FILE_VERSION = "dfd8ba74af217a640f64605a9cfe08bcf1cc885a"
+
+http_archive(
+    name = "rules_file",
+    sha256 = "f6440ee964428778dc5a99044e8a876c2a87e4fb9a3b15aa17d8ebecea66708a",
+    strip_prefix = "rules_file-%s" % FILE_VERSION,
+    url = "https://github.com/rivethealth/rules_file/archive/%s.tar.gz" % FILE_VERSION,
+)
+
+load("@rules_file//rules:init.bzl", "file_init")
+
+file_init()
+
+load("@rules_file//rules:workspace.bzl", "file_repositories")
+
+file_repositories()
+
+# JavaScript
+
+JAVASCRIPT_VERSION = "a278dd6e24fbe28b0dde73a6ec1d267b827fab41"
+
+http_archive(
+    name = "better_rules_javascript",
+    sha256 = "f4b75ae6f3f1a2c2e0739399a7373cea3ba591a4526b9593ae2f33f5904c6a7e",
+    strip_prefix = "rules_javascript-%s" % JAVASCRIPT_VERSION,
+    url = "https://github.com/rivethealth/rules_javascript/archive/%s.tar.gz" % JAVASCRIPT_VERSION,
+)
+
+load("@better_rules_javascript//rules:workspace.bzl", javascript_repositories = "repositories")
+
+javascript_repositories()
+
+# Bazel Watcher 2
+
+load("@rules_file//file:workspace.bzl", "files")
+
+files(
+    name = "bazel_watcher_2_files",
+    build = "@bazel_watcher_2//:BUILD.file.bazel",
+    root_file = "@bazel_watcher_2//:WORKSPACE.bazel",
+)
+
+load("@better_rules_javascript//commonjs:workspace.bzl", "cjs_directory_npm_plugin")
+load("@better_rules_javascript//typescript:workspace.bzl", "ts_directory_npm_plugin")
+load("@better_rules_javascript//npm:workspace.bzl", "npm")
+load("//tools:npm_data.bzl", "PACKAGES", "ROOTS")
+
+npm(
+    "npm",
+    PACKAGES,
+    ROOTS,
+    [
+        cjs_directory_npm_plugin(),
+        ts_directory_npm_plugin(),
+    ],
+)
