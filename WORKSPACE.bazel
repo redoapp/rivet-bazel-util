@@ -38,6 +38,22 @@ go_rules_dependencies()
 
 go_register_toolchains()
 
+# Gazelle
+
+GAZELLE_VERSION = "v0.24.0"
+
+http_archive(
+    name = "bazel_gazelle",
+    sha256 = "de69a09dc70417580aabf20a28619bb3ef60d038470c7cf8442fafcf627c21cb",
+    urls = [
+        "https://github.com/bazelbuild/bazel-gazelle/releases/download/%s/bazel-gazelle-%s.tar.gz" % (GAZELLE_VERSION, GAZELLE_VERSION),
+    ],
+)
+
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+
+gazelle_dependencies()
+
 # Protobuf
 http_archive(
     name = "com_google_protobuf",
@@ -115,6 +131,21 @@ http_archive(
 load("@better_rules_javascript//rules:workspace.bzl", javascript_repositories = "repositories")
 
 javascript_repositories()
+
+# Bazel Watcher
+
+BAZEL_WATCHER_VERSION = "f672f1b1c48d48052b57a3d27af118bbc8f9d3e4"
+
+http_archive(
+    name = "bazel_watcher",
+    sha256 = "68b2c09af9b5a8debc5dd5ac43c8a4eaf5693bec757481951f2cf5fae8d7b0a3",
+    strip_prefix = "bazel-watcher-%s" % BAZEL_WATCHER_VERSION,
+    url = "https://github.com/bazelbuild/bazel-watcher/archive/%s.tar.gz" % BAZEL_WATCHER_VERSION,
+)
+
+load("@bazel_watcher//:repositories.bzl", "go_repositories")
+
+go_repositories()
 
 # Bazel Watcher 2
 

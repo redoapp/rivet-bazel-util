@@ -1,0 +1,11 @@
+load("//watcher:rules.bzl", "restart_service")
+
+sh_binary(
+    name = "bin",
+    srcs = ["service.sh"],
+)
+
+restart_service(
+    name = "service",
+    bin = ":bin",
+)

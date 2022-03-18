@@ -1,10 +1,23 @@
 package(default_visibility = ["//visibility:public"])
 
+DIRS = ["files/"] + [
+    "%s/**/" % file
+    for file in glob(
+        ["files/*"],
+        exclude_directories = 0,
+    )
+    if file != "files/.git" and
+       file != "files/.bazel_cache" and
+       not file.startswith("files/bazel-")
+]
+
 filegroup(
     name = "black_files",
     srcs = glob(
         [
-            "files/**/*.py",
+            dir + pattern
+            for dir in DIRS
+            for pattern in ["*.py"]
         ],
     ),
 )
@@ -13,15 +26,23 @@ filegroup(
     name = "buildifier_files",
     srcs = glob(
         [
-            "files/**/*.bazel",
-            "files/**/*.bzl",
-            "files/**/BUILD",
-            "files/**/WORKSPACE",
+            dir + pattern
+            for dir in DIRS
+            for pattern in [
+                "*.bazel",
+                "*.bzl",
+            ]
         ],
     ),
 )
 
 filegroup(
     name = "prettier_files",
-    srcs = glob(["files/**/*.md"]),
+    srcs = glob(
+        [
+            dir + pattern
+            for dir in DIRS
+            for pattern in ["*.md"]
+        ],
+    ),
 )

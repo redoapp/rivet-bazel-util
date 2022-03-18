@@ -3,13 +3,20 @@ import os
 import subprocess
 import sys
 from bazelwatcher2 import ibazel_notifications
+from rules_python.python.runfiles import runfiles
+
+r = runfiles.Create()
 
 
 def run(args):
     pipe_read, pipe_write = os.pipe()
 
     process = subprocess.Popen(
-        [args.ibazel, f"-profile_dev=/dev/fd/{pipe_write}"] + args.args,
+        [
+            r.Rlocation("bazel_watcher/ibazel/ibazel_/ibazel"),
+            f"-profile_dev=/dev/fd/{pipe_write}",
+        ]
+        + args.args,
         pass_fds=[pipe_write],
     )
     os.close(pipe_write)

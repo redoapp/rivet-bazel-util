@@ -11,7 +11,6 @@ parser.add_argument(
     help="path to executable",
     metavar="RUN",
 )
-parser.add_argument("ibazel", help="ibazel command")
 parser.add_argument("args", metavar="arg", nargs="*", help="ibazel args")
 
 if __name__ == "__main__":
