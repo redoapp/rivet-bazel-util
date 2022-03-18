@@ -1,5 +1,6 @@
 load("@bazel_skylib//lib:shell.bzl", "shell")
 load("@rules_file//util:path.bzl", "runfile_path")
+load(":providers.bzl", "runfiles_files")
 
 def _restart_service_impl(ctx):
     actions = ctx.actions
@@ -9,12 +10,6 @@ def _restart_service_impl(ctx):
     restart = ctx.attr._restart[DefaultInfo]
     runner = ctx.file._runner
     workspace_name = ctx.workspace_name
-
-    inputs = depset(
-        [entry.target_file for entry in bin.default_runfiles.symlinks.to_list()] +
-        [entry.target_file for entry in bin.default_runfiles.root_symlinks.to_list()],
-        transitive = [bin.default_runfiles.files],
-    )
 
     digest = actions.declare_file("%s.digest" % name)
     args = actions.args()
@@ -28,7 +23,7 @@ def _restart_service_impl(ctx):
             "supports-workers": "1",
             "requires-worker-protocol": "json",
         },
-        inputs = inputs,
+        inputs = runfiles_files(bin.default_runfiles),
         outputs = [digest],
         tools = [hash.files_to_run],
     )
