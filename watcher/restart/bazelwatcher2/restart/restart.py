@@ -1,29 +1,15 @@
 import atexit
-import argparse
 import io
 import os
+import pathlib
 import signal
 import sys
 import typing
 from bazelwatcher2 import ibazel_notifications
 
-parser = argparse.ArgumentParser(
-    description="Run the command, restarting it when the digest changes",
-    prog="bazel-runner",
-)
-parser.add_argument("--digest", help="Digest file path", required=True)
-parser.add_argument(
-    "--pass-events", action="store_true", help="Pass events to executable via stdin"
-)
-parser.add_argument("--no-pass-events", action="store_false", dest="pass_events")
-parser.add_argument("command", help="Command")
-parser.add_argument("arguments", help="Arguments", nargs="*")
 
-args = parser.parse_args()
-
-
-class Runner:
-    digest_path: str
+class _Runner:
+    digest_path: pathlib.Path
     command: str
     arguments: typing.List[str]
     pass_events: bool
@@ -50,8 +36,7 @@ class Runner:
         if notification == ibazel_notifications.BuildCompleted(
             ibazel_notifications.BuildStatus.SUCCESS
         ):
-            with open(args.digest, "rb") as f:
-                new_digest = f.read()
+            new_digest = self.digest_path.read_bytes()
 
             if self._digest != new_digest:
                 self.stop()
@@ -76,15 +61,17 @@ class Runner:
             else:
                 sys.stdin.close()
             try:
-                os.execvp(args.command, [args.command] + args.arguments)
+                os.execvp(self.command, [self.command] + self.arguments)
             except FileNotFoundError:
-                sys.exit(f"Executable does not exist: {args.executable}")
+                sys.exit(f"Executable does not exist: {self.command}")
         if self.pass_events:
             os.close(pipe_read)
             self._pipe = os.fdopen(pipe_write, "w")
 
     def stop(self, sig=signal.SIGTERM):
         self._digest = None
+        if self._pipe:
+            self._pipe.close()
         if self._pid:
             try:
                 os.killpg(self._pid, sig)
@@ -98,30 +85,28 @@ class Runner:
             self._pid = None
 
 
-runner = Runner(
-    arguments=args.arguments,
-    command=args.command,
-    digest_path=args.digest,
-    pass_events=args.pass_events,
-)
+def run(args):
+    runner = _Runner(
+        arguments=args.arguments,
+        command=args.command,
+        digest_path=pathlib.Path(args.digest),
+        pass_events=args.pass_events,
+    )
 
+    def stop(sig):
+        runner.stop(sig)
 
-def stop(sig):
-    runner.stop(sig)
+    def receive_signal(sig, frame):
+        stop(sig)
+        sys.exit()
 
+    signal.signal(signal.SIGINT, receive_signal)
+    signal.signal(signal.SIGTERM, receive_signal)
+    atexit.register(stop, signal.SIGTERM)
 
-def receive_signal(sig, frame):
-    stop(sig)
-    sys.exit(0)
+    runner.notify(
+        ibazel_notifications.BuildCompleted(ibazel_notifications.BuildStatus.SUCCESS)
+    )
 
-
-signal.signal(signal.SIGINT, receive_signal)
-signal.signal(signal.SIGTERM, receive_signal)
-atexit.register(stop, signal.SIGTERM)
-
-runner.notify(
-    ibazel_notifications.BuildCompleted(ibazel_notifications.BuildStatus.SUCCESS)
-)
-
-for notification in ibazel_notifications.read(sys.stdin):
-    runner.notify(notification)
+    for notification in ibazel_notifications.read(sys.stdin):
+        runner.notify(notification)

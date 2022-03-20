@@ -7,6 +7,7 @@ def _restart_service_impl(ctx):
     bin = ctx.attr.bin[DefaultInfo]
     hash = ctx.attr._hash[DefaultInfo]
     name = ctx.attr.name
+    pass_events = ctx.attr.pass_events
     restart = ctx.attr._restart[DefaultInfo]
     runner = ctx.file._runner
     workspace_name = ctx.workspace_name
@@ -35,6 +36,7 @@ def _restart_service_impl(ctx):
         template = runner,
         substitutions = {
             "%{bin}": shell.quote(runfile_path(workspace_name, bin.files_to_run.executable)),
+            "%{flags}": shell.quote("--pass-events") if pass_events else "",
             "%{digest}": shell.quote(runfile_path(workspace_name, digest)),
         },
     )
@@ -53,8 +55,12 @@ restart_service = rule(
     attrs = {
         "bin": attr.label(
             cfg = "target",
+            doc = "Executable.",
             executable = True,
             mandatory = True,
+        ),
+        "pass_events": attr.bool(
+            doc = "Pass build events to executable.",
         ),
         "_hash": attr.label(
             cfg = "exec",

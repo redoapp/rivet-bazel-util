@@ -9,4 +9,7 @@ if [ -z "${RUNFILES_DIR-}" ]; then
   fi
 fi
 
-exec "$RUNFILES_DIR"/bazel_watcher_2/watcher/restart/bin --digest "$RUNFILES_DIR"/%{digest} "$RUNFILES_DIR"/%{bin}
+exec "$RUNFILES_DIR"/bazel_watcher_2/watcher/restart/bin \
+  --digest "$RUNFILES_DIR"/%{digest} \
+  %{flags} \
+  "$RUNFILES_DIR"/%{bin}

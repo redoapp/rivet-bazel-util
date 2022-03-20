@@ -29,5 +29,4 @@ def _worker_factory(_):
     return _worker
 
 
-if __name__ == "__main__":
-    worker.main(_worker_factory)
+worker.main(_worker_factory)

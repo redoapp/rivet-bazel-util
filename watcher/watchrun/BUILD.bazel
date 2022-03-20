@@ -9,7 +9,7 @@ py_binary(
     data = ["@bazel_watcher//ibazel"],
     imports = ["."],
     legacy_create_init = False,
-    main = "bazelwatcher2/watchrun/main.py",
+    main = "bazelwatcher2/watchrun/__main__.py",
     deps = [
         "//ibazel/notifications:py",
         "@rules_python//python/runfiles",
@@ -24,4 +24,5 @@ sh_binary(
 restart_service(
     name = "test",
     bin = ":example",
+    pass_events = True,
 )

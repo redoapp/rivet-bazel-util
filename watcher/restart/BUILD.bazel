@@ -6,6 +6,7 @@ py_binary(
     name = "bin",
     srcs = glob(["**/*.py"]),
     imports = ["."],
-    main = "bazelwatcher2/restart.py",
+    legacy_create_init = False,
+    main = "bazelwatcher2/restart/__main__.py",
     deps = ["//ibazel/notifications:py"],
 )

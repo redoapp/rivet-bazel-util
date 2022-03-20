@@ -6,6 +6,7 @@ py_binary(
     name = "bin",
     srcs = glob(["**/*.py"]),
     imports = ["."],
-    main = "bazelwatcher2/hash.py",
+    legacy_create_init = False,
+    main = "bazelwatcher2/hash/__main__.py",
     deps = ["//python/worker:py"],
 )
