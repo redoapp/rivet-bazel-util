@@ -1,7 +1,7 @@
+load("@rules_pkg//pkg:mappings.bzl", "pkg_filegroup")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("@rules_python//python:defs.bzl", "py_binary")
-load("//watcher:rules.bzl", "restart_service")
-
-package(default_visibility = ["//visibility:public"])
+load("//package:rules.bzl", "pkg_executable")
 
 py_binary(
     name = "bin",
@@ -10,19 +10,21 @@ py_binary(
     imports = ["."],
     legacy_create_init = False,
     main = "bazelwatcher2/watchrun/__main__.py",
+    visibility = ["//visibility:public"],
     deps = [
         "//ibazel/notifications:py",
         "@rules_python//python/runfiles",
     ],
 )
 
-sh_binary(
-    name = "example",
-    srcs = ["test.sh"],
+pkg_executable(
+    name = "pkg",
+    bin = ":bin",
+    path = "watchrun",
 )
 
-restart_service(
-    name = "test",
-    bin = ":example",
-    pass_events = True,
+pkg_tar(
+    name = "tar",
+    srcs = [":pkg"],
+    visibility = ["//visibility:public"],
 )

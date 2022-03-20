@@ -23,6 +23,21 @@ http_archive(
     urls = ["https://github.com/bazelbuild/bazel-skylib/archive/%s.tar.gz" % SKYLIB_VERSION],
 )
 
+# Pkg
+
+PKG_VERSION = "5602b1e788b875053084cc9068b5ce2a4dc817e1"
+
+http_archive(
+    name = "rules_pkg",
+    sha256 = "6ea5b1810138bdc43fa947c7a2f8cfe93677c9fd2b783335b0a390628e164d24",
+    strip_prefix = "rules_pkg-%s" % PKG_VERSION,
+    url = "https://github.com/bazelbuild/rules_pkg/archive/%s.tar.gz" % PKG_VERSION,
+)
+
+load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
+
+rules_pkg_dependencies()
+
 # Go
 GO_VERSION = "v0.24.5"
 
