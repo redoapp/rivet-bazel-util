@@ -22,7 +22,7 @@ def run(args):
             "--starlark:expr=target.files_to_run.executable.path",
         ]
         + args.bazel_args
-        + args.targets,
+        + [" + ".join(args.targets)],
         capture_output=True,
         encoding="utf-8",
     )
