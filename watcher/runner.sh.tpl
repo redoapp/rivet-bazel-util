@@ -12,4 +12,6 @@ fi
 exec "$RUNFILES_DIR"/bazel_watcher_2/watcher/restart/bin \
   --digest "$RUNFILES_DIR"/%{digest} \
   %{flags} \
-  "$RUNFILES_DIR"/%{bin}
+  -- \
+  "$RUNFILES_DIR"/%{bin} \
+  "$@"
