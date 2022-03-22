@@ -45,7 +45,10 @@ class _Runner:
                 return
 
         if self._pipe:
-            ibazel_notifications.write_one(self._pipe, notification)
+            try:
+                ibazel_notifications.write_one(self._pipe, notification)
+            except BrokenPipeError:
+                pass
 
     def _start(self):
         if self.pass_events:
