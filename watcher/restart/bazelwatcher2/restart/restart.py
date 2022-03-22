@@ -1,4 +1,3 @@
-import atexit
 import io
 import os
 import pathlib
@@ -41,7 +40,7 @@ class _Runner:
             if self._digest != new_digest:
                 self.stop()
                 self._digest = new_digest
-                self._start()
+                self.start()
                 return
 
         if self._pipe:
@@ -50,7 +49,7 @@ class _Runner:
             except BrokenPipeError:
                 pass
 
-    def _start(self):
+    def start(self):
         if self.pass_events:
             pipe_read, pipe_write = os.pipe()
         self._pid = os.fork()
@@ -58,9 +57,7 @@ class _Runner:
             os.setpgid(0, 0)
             if self.pass_events:
                 os.close(pipe_write)
-                stdin = sys.stdin.fileno()
-                sys.stdin.close()
-                os.dup2(pipe_read, stdin)
+                os.dup2(pipe_read, sys.stdin.fileno())
             else:
                 sys.stdin.close()
             try:
@@ -96,20 +93,21 @@ def run(args):
         pass_events=args.pass_events,
     )
 
-    def stop(sig):
-        runner.stop(sig)
-
     def receive_signal(sig, frame):
-        stop(sig)
+        runner.stop(sig)
         sys.exit()
 
     signal.signal(signal.SIGINT, receive_signal)
     signal.signal(signal.SIGTERM, receive_signal)
-    atexit.register(stop, signal.SIGTERM)
 
-    runner.notify(
-        ibazel_notifications.BuildCompleted(ibazel_notifications.BuildStatus.SUCCESS)
-    )
+    try:
+        runner.notify(
+            ibazel_notifications.BuildCompleted(
+                ibazel_notifications.BuildStatus.SUCCESS
+            )
+        )
 
-    for notification in ibazel_notifications.read(sys.stdin):
-        runner.notify(notification)
+        for notification in ibazel_notifications.read(sys.stdin):
+            runner.notify(notification)
+    finally:
+        runner.stop(signal.SIGTERM)

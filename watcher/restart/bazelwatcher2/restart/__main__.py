@@ -1,4 +1,7 @@
 import argparse
+import signal
+
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 parser = argparse.ArgumentParser(
     description="Run the command, restarting it when the digest changes",

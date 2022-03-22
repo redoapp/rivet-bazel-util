@@ -1,6 +1,7 @@
 import contextlib
 import json
 import os
+import pathlib
 import subprocess
 import sys
 import time
@@ -18,7 +19,11 @@ def _start(executables):
     processes = []
     for executable in executables:
         process = subprocess.Popen(
-            [executable], env=env, stdin=subprocess.PIPE, encoding="utf-8"
+            [pathlib.Path.cwd() / executable],
+            env=env,
+            cwd=f"{pathlib.Path(executable)}.runfiles",
+            stdin=subprocess.PIPE,
+            encoding="utf-8",
         )
         processes.append(process)
     return processes
@@ -38,7 +43,7 @@ def run(args):
         ]
         + args.bazel_args
         + [" + ".join(args.targets)],
-        capture_output=True,
+        stdout=subprocess.PIPE,
         encoding="utf-8",
     )
     if executables_process.returncode:
@@ -81,7 +86,7 @@ def run(args):
                     elif event["type"] == "BUILD_FAILED":
                         for process in processes:
                             notification = ibazel_notifications.BuildCompleted(
-                                ibazel_notifications.BuildStatus.SUCCESS
+                                ibazel_notifications.BuildStatus.FAILURE
                             )
 
                             ibazel_notifications.write_one(process.stdin, notification)

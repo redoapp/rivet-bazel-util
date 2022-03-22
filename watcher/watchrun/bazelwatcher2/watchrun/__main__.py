@@ -1,4 +1,7 @@
 import argparse
+import signal
+
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 parser = argparse.ArgumentParser(
     prog="watchrun", description="Build and run Bazel executables."
