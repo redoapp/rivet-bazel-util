@@ -32,22 +32,31 @@ class _Runner:
         self._pid = None
 
     def notify(self, notification):
-        if notification == ibazel_notifications.BuildCompleted(
-            ibazel_notifications.BuildStatus.SUCCESS
-        ):
-            new_digest = self.digest_path.read_bytes()
+        retries = 1
+        while True:
+            if notification == ibazel_notifications.BuildCompleted(
+                ibazel_notifications.BuildStatus.SUCCESS
+            ):
+                new_digest = self.digest_path.read_bytes()
 
-            if self._digest != new_digest:
-                self.stop()
-                self._digest = new_digest
-                self.start()
-                return
+                if self._digest != new_digest:
+                    self.stop()
+                    self._digest = new_digest
+                    self.start()
+                    return
 
-        if self._pipe:
-            try:
-                ibazel_notifications.write_one(self._pipe, notification)
-            except BrokenPipeError:
-                pass
+            if self._pipe:
+                try:
+                    ibazel_notifications.write_one(self._pipe, notification)
+                except BrokenPipeError:
+                    print(f"{command} ended unexpectedly", file=sys.stderr)
+                    if retries:
+                        retries -= 1
+                        print(f"Restarting {command}", file=sys.stderr)
+                        self.start()
+                        continue
+
+            break
 
     def start(self):
         if self.pass_events:

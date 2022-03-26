@@ -29,10 +29,7 @@ parser.add_argument(
     metavar="target",
 )
 
-try:
-    args = parser.parse_args()
-    from bazelwatcher2.watchrun import watchrun
+args = parser.parse_args()
+from bazelwatcher2.watchrun import watchrun
 
-    watchrun.run(args)
-except KeyboardInterrupt:
-    pass
+watchrun.run(args)

@@ -11,7 +11,7 @@ from rules_python.python.runfiles import runfiles
 r = runfiles.Create()
 
 
-def _start(executables):
+def _start(execution_root, executables):
     env = dict(os.environ)
     env.pop("RUNFILES_DIR", None)
     env.pop("RUNFILES_MANIFEST_FILE", None)
@@ -19,9 +19,9 @@ def _start(executables):
     processes = []
     for executable in executables:
         process = subprocess.Popen(
-            [pathlib.Path.cwd() / executable],
+            [execution_root / executable],
             env=env,
-            cwd=f"{pathlib.Path(executable)}.runfiles",
+            cwd=execution_root,
             stdin=subprocess.PIPE,
             encoding="utf-8",
         )
@@ -33,6 +33,15 @@ def run(args):
     if not args.targets:
         while True:
             time.sleep(60)
+
+    execution_root_process = subprocess.run(
+        ["bazel", "info", "execution_root"],
+        stdout=subprocess.PIPE,
+        encoding="utf-8",
+    )
+    if execution_root_process.returncode:
+        sys.exit("Could not get the execution root")
+    execution_root = pathlib.Path(execution_root_process.stdout.rstrip("\n"))
 
     executables_process = subprocess.run(
         [
@@ -48,11 +57,13 @@ def run(args):
     )
     if executables_process.returncode:
         sys.exit(f"Could not resolve executables: {executables_process.stderr}")
-    executables = executables_process.stdout.strip().split("\n")
+    executables = [
+        pathlib.Path(path) for path in executables_process.stdout.strip().split("\n")
+    ]
 
     pipe_read, pipe_write = os.pipe()
 
-    with contextlib.ExitStack() as stack:
+    with contextlib.ExitStack() as process_stack:
         process = subprocess.Popen(
             [
                 r.Rlocation("bazel_watcher/ibazel/ibazel_/ibazel"),
@@ -64,7 +75,7 @@ def run(args):
             + args.targets,
             pass_fds=[pipe_write],
         )
-        stack.enter_context(process)
+        process_stack.enter_context(process)
 
         processes = []
         try:
@@ -74,9 +85,9 @@ def run(args):
                     event = json.loads(line)
                     if event["type"] == "BUILD_DONE":
                         if not processes:
-                            processes = _start(executables)
+                            processes = _start(execution_root, executables)
                             for p in processes:
-                                stack.enter_context(p)
+                                process_stack.enter_context(p)
                             continue
                         for process in processes:
                             notification = ibazel_notifications.BuildCompleted(
