@@ -1,4 +1,4 @@
-workspace(name = "bazel_watcher_2")
+workspace(name = "rivet_bazel_util")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
@@ -167,9 +167,9 @@ go_repositories()
 load("@rules_file//file:workspace.bzl", "files")
 
 files(
-    name = "bazel_watcher_2_files",
-    build = "@bazel_watcher_2//:BUILD.file.bazel",
-    root_file = "@bazel_watcher_2//:WORKSPACE.bazel",
+    name = "rivet_bazel_util_files",
+    build = "@rivet_bazel_util//:BUILD.file.bazel",
+    root_file = "@rivet_bazel_util//:WORKSPACE.bazel",
 )
 
 load("@better_rules_javascript//commonjs:workspace.bzl", "cjs_directory_npm_plugin")

@@ -1,4 +1,4 @@
-load("@rules_pkg//:providers.bzl", "PackageFilesInfo", "PackageSymlinkInfo", "PackageFilegroupInfo")
+load("@rules_pkg//:providers.bzl", "PackageFilegroupInfo", "PackageFilesInfo", "PackageSymlinkInfo")
 
 def _runfile_path(workspace_name, file):
     path = file.short_path
@@ -15,7 +15,7 @@ def _runfiles_pkg_files(workspace_name, runfiles):
 
     return PackageFilesInfo(
         dest_src_map = files,
-        attributes = { "mode": "0755" },
+        attributes = {"mode": "0755"},
     )
 
 def _pkg_runfiles_impl(ctx):
@@ -25,7 +25,7 @@ def _pkg_runfiles_impl(ctx):
 
     runfiles_files = _runfiles_pkg_files(workspace_name, runfiles.default_runfiles)
 
-    pkg_filegroup_info =  PackageFilegroupInfo(
+    pkg_filegroup_info = PackageFilegroupInfo(
         pkg_dirs = [],
         pkg_files = [(runfiles_files, label)],
         pkg_symlinks = [],
@@ -55,17 +55,17 @@ def _pkg_executable_impl(ctx):
 
     runfiles_files = _runfiles_pkg_files(workspace_name, bin.default_runfiles)
     runfiles_files = PackageFilesInfo(
-        dest_src_map = { "%s.runfiles/%s" % (path, p): file for p, file in runfiles_files.dest_src_map.items() },
+        dest_src_map = {"%s.runfiles/%s" % (path, p): file for p, file in runfiles_files.dest_src_map.items()},
         attributes = runfiles_files.attributes,
     )
 
     executable_symlink = PackageSymlinkInfo(
-        attributes = { "mode": "0755" },
+        attributes = {"mode": "0755"},
         destination = path,
         target = "%s.runfiles/%s" % (path, _runfile_path(workspace_name, bin_executable)),
     )
 
-    pkg_filegroup_info =  PackageFilegroupInfo(
+    pkg_filegroup_info = PackageFilegroupInfo(
         pkg_dirs = [],
         pkg_files = [(runfiles_files, label)],
         pkg_symlinks = [(executable_symlink, label)],

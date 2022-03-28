@@ -1,0 +1,10 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+pkg_tar(
+    name = "tar",
+    srcs = [
+        "//bazel/mrun:pkg",
+        "//bazel/watchrun:pkg",
+    ],
+    visibility = ["//visibility:public"],
+)

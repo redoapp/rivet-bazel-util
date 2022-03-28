@@ -16,7 +16,7 @@ generate_test(
 
 format(
     name = "buildifier_format",
-    srcs = ["@bazel_watcher_2_files//:buildifier_files"],
+    srcs = ["@rivet_bazel_util_files//:buildifier_files"],
     formatter = ":buildifier",
     strip_prefix = "/files",
 )
@@ -27,7 +27,7 @@ black(
 
 format(
     name = "black_format",
-    srcs = ["@bazel_watcher_2_files//:black_files"],
+    srcs = ["@rivet_bazel_util_files//:black_files"],
     formatter = ":black",
     strip_prefix = "/files",
 )
@@ -41,7 +41,7 @@ configure_prettier(
 
 format(
     name = "prettier_format",
-    srcs = ["@bazel_watcher_2_files//:prettier_files"],
+    srcs = ["@rivet_bazel_util_files//:prettier_files"],
     formatter = ":prettier",
     strip_prefix = "/files",
 )

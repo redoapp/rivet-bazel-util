@@ -1,0 +1,9 @@
+sh_binary(
+    name = "service",
+    srcs = ["service.sh"],
+)
+
+sh_binary(
+    name = "item",
+    srcs = ["item.sh"],
+)

@@ -9,7 +9,7 @@ function escape_pattern {
 
 file_packages="$( \
     (find . -name BUILD -o -name BUILD.bazel) \
-    | sed -e 's:/[^/]*$::' -e 's:^\./::' -e 's:^:@bazel_watcher_2_files//files/:' -e 's:/.$::' \
+    | sed -e 's:/[^/]*$::' -e 's:^\./::' -e 's:^:@rivet_bazel_util_files//files/:' -e 's:/.$::' \
 )"
 
 packages="$(
@@ -19,4 +19,4 @@ packages="$(
     | sort \
 )"
 
-sed -e "s/%{deleted_packages}/$(escape_pattern "$packages")/g" "$RUNFILES_DIR/bazel_watcher_2/tools/deleted.bazelrc.tpl" > tools/deleted.bazelrc
+sed -e "s/%{deleted_packages}/$(escape_pattern "$packages")/g" "$RUNFILES_DIR/rivet_bazel_util/tools/deleted.bazelrc.tpl" > tools/deleted.bazelrc
