@@ -19,15 +19,15 @@ r = runfiles.Create()
 
 def _event_to_notification(event):
     if event["type"] == "BUILD_DONE":
-        return ibazel_notifications.BuildCompleted(
-            ibazel_notifications.BuildStatus.SUCCESS
+        return notifications.BuildCompleted(
+            notifications.BuildStatus.SUCCESS
         )
     elif event["type"] == "BUILD_FAILED":
-        return ibazel_notifications.BuildCompleted(
-            ibazel_notifications.BuildStatus.FAILURE
+        return notifications.BuildCompleted(
+            notifications.BuildStatus.FAILURE
         )
     elif event["type"] == "BUILD_START":
-        return ibazel_notifications.BuildStarted()
+        return notifications.BuildStarted()
 
 
 def _watch(
@@ -61,7 +61,7 @@ def _watch(
                     notification = _event_to_notification(event)
                     if notification:
                         try:
-                            process.stdin.write_one(notification)
+                            notifications.write_one(process.stdin, notification)
                         except BrokenPipeError:
                             break
             try:

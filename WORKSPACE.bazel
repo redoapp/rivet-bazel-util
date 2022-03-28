@@ -162,7 +162,7 @@ load("@bazel_watcher//:repositories.bzl", "go_repositories")
 
 go_repositories()
 
-# Bazel Watcher 2
+# Rivet Bazel Util
 
 load("@rules_file//file:workspace.bzl", "files")
 
