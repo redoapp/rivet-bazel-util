@@ -4,7 +4,7 @@ import subprocess
 import sys
 import threading
 
-COLORS = [str(i) for i in range(30, 38)]
+COLORS = [str(i) for i in range(31, 38)]
 
 
 def _prefix(name, color):
