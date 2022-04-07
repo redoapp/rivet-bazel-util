@@ -19,13 +19,9 @@ r = runfiles.Create()
 
 def _event_to_notification(event):
     if event["type"] == "BUILD_DONE":
-        return notifications.BuildCompleted(
-            notifications.BuildStatus.SUCCESS
-        )
+        return notifications.BuildCompleted(notifications.BuildStatus.SUCCESS)
     elif event["type"] == "BUILD_FAILED":
-        return notifications.BuildCompleted(
-            notifications.BuildStatus.FAILURE
-        )
+        return notifications.BuildCompleted(notifications.BuildStatus.FAILURE)
     elif event["type"] == "BUILD_START":
         return notifications.BuildStarted()
 
