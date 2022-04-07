@@ -9,12 +9,11 @@ def _digest_impl(target, ctx):
     if "digest" in target[OutputGroupInfo]:
         return []
 
-    digest = actions.declare_file("%s.digest" % name)
-    create_digest(
+    digest = create_digest(
         actions = actions,
-        runfiles = bin.default_runfiles,
         hash = hash,
-        output = digest,
+        name = name,
+        runfiles = bin.default_runfiles,
     )
 
     output_group_info = OutputGroupInfo(
