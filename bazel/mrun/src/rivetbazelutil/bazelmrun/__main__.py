@@ -51,6 +51,9 @@ parser.add_argument(
 args = parser.parse_args()
 
 from rivetbazelutil.bazelmrun import mrun
+from rivetbazelutil.common import run
+
+run.set_cwd()
 
 mrun.run(
     aliases=dict(args.aliases),

@@ -7,6 +7,16 @@ def _create_pg():
     os.setpgid(0, 0)
 
 
+def set_cwd():
+    try:
+        wd = os.environ["BUILD_WORKING_DIRECTORY"]
+    except KeyError:
+        pass
+    else:
+        del os.environ["BUILD_WORKING_DIRECTORY"]
+        os.chdir(wd)
+
+
 def run_executable(
     workspace,
     execution_root,
