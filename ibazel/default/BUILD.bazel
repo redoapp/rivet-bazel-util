@@ -7,12 +7,11 @@ load("//ibazel:rules.bzl", "ibazel_toolchain")
         ibazel = "@ibazel_%s//file" % name,
         visibility = ["//visibility:public"],
     )
-    for name
-    in IBAZEL_REPO_NAMES
+    for name in IBAZEL_REPO_NAMES
 ]
 
 ibazel_toolchain(
     name = "src",
     ibazel = "@bazel-watcher//cmd/ibazel",
-    visibility = ["//visibility:public"]
+    visibility = ["//visibility:public"],
 )

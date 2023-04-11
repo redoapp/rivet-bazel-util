@@ -12,7 +12,7 @@ def _ibazel_impl(ctx):
     executable = actions.declare_file(name)
     actions.expand_template(
         is_executable = True,
-        substitutions = { 
+        substitutions = {
             "%{exec}": shell.quote(runfile_path(workspace, ibazel.ibazel)),
         },
         template = template,
@@ -37,12 +37,11 @@ ibazel = rule(
     toolchains = [":toolchain_type"],
 )
 
-
 def _ibazel_toolchain_impl(ctx):
     ibazel = ctx.file.ibazel
 
     toolchain_info = platform_common.ToolchainInfo(
-        ibazel = ibazel
+        ibazel = ibazel,
     )
 
     return [toolchain_info]

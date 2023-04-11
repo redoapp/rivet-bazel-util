@@ -18,7 +18,7 @@ IBAZEL_REPOS = {
         ),
         "linux_amd64": struct(
             path = "ibazel_linux_amd64",
-            sha256 = "149befe61e53c69ededa0aabcd4a305b60e176ba042a712c5e8e19f37f551684"
+            sha256 = "149befe61e53c69ededa0aabcd4a305b60e176ba042a712c5e8e19f37f551684",
         ),
         "linux_arm64": struct(
             path = "ibazel_linux_arm64",
@@ -27,6 +27,6 @@ IBAZEL_REPOS = {
         "windows_amd64": struct(
             path = "ibazel_windows_amd64.exe",
             sha256 = "92b45ff697a98706f7d26547185d282350dd994e76185705406845e88d624565",
-        )
-    }
+        ),
+    },
 }

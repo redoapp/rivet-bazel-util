@@ -2,12 +2,12 @@ load(":rules.bzl", "ibazel")
 
 ibazel(
     name = "bin",
-    visibility = ["//visibility:public"]
+    visibility = ["//visibility:public"],
 )
 
 toolchain_type(
     name = "toolchain_type",
-    visibility = ["//visibility:public"]
+    visibility = ["//visibility:public"],
 )
 
 toolchain(

@@ -21,7 +21,7 @@ def _worker(args, inputs):
         if input.digest:
             hash.update(input.digest)
         hash.update(b"\0")
-    digest = hash.digest()[:args.length]
+    digest = hash.digest()[: args.length]
     with open(args.output, "wb") as f:
         f.write(
             digest
