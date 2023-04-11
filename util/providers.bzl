@@ -5,12 +5,14 @@ def _runfiles_files(runfiles):
         runfiles.files.to_list()
     )
 
-def _create_one_digest(actions, output, files, hash, encoding):
+def _create_one_digest(actions, output, files, hash, encoding, length = None):
     args = actions.args()
     args.set_param_file_format("multiline")
     args.use_param_file("@%s", use_always = True)
     if encoding != None:
         args.add("--encoding", encoding)
+    if length:
+        args.add("--length", length)
     args.add(output)
 
     actions.run(
@@ -29,7 +31,7 @@ def _create_one_digest(actions, output, files, hash, encoding):
 
     return output
 
-def create_digest(actions, output, runfiles, hash, encoding = None):
+def create_digest(actions, output, runfiles, hash, encoding = None, length = None):
     files = _runfiles_files(runfiles)
 
     if 200 <= len(files):
@@ -53,5 +55,6 @@ def create_digest(actions, output, runfiles, hash, encoding = None):
         encoding = encoding,
         files = files,
         hash = hash,
+        length = length,
         output = output,
     )

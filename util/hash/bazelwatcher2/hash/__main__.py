@@ -10,6 +10,7 @@ def _worker(args, inputs):
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--encoding", default="none")
+    parser.add_argument("--length", default=32, type=int)
     parser.add_argument("output")
     args = parser.parse_args(args)
 
@@ -20,7 +21,7 @@ def _worker(args, inputs):
         if input.digest:
             hash.update(input.digest)
         hash.update(b"\0")
-    digest = hash.digest()
+    digest = hash.digest()[:args.length]
     with open(args.output, "wb") as f:
         f.write(
             digest
