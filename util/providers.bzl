@@ -5,12 +5,12 @@ def _runfiles_files(runfiles):
         runfiles.files.to_list()
     )
 
-def _create_one_digest(actions, name, files, hash):
-    output = actions.declare_file("%s.digest" % name)
-
+def _create_one_digest(actions, output, files, hash, encoding):
     args = actions.args()
     args.set_param_file_format("multiline")
     args.use_param_file("@%s", use_always = True)
+    if encoding != None:
+        args.add("--encoding", encoding)
     args.add(output)
 
     actions.run(
@@ -29,14 +29,29 @@ def _create_one_digest(actions, name, files, hash):
 
     return output
 
-def create_digest(actions, name, runfiles, hash):
+def create_digest(actions, output, runfiles, hash, encoding = None):
     files = _runfiles_files(runfiles)
 
     if 200 <= len(files):
+        package_path = "/".join([part for part in [output.root.path, output.owner.workspace_name, output.owner.package] if part])
+        output_name = output.path[len("%s/" % package_path):]
         new_files = []
         for i in range(0, len(files), 100):
-            output = _create_one_digest(actions, "%s%s" % (name, i // 100), files[i:i + 100], hash)
-            new_files.append(output)
+            one_output = actions.declare_file("%s%s" % (output_name, i))
+            _create_one_digest(
+                actions = actions,
+                encoding = None,
+                files = files[i:i + 100],
+                hash = hash,
+                output = one_output,
+            )
+            new_files.append(one_output)
         files = new_files
 
-    return _create_one_digest(actions = actions, name = name, files = files, hash = hash)
+    return _create_one_digest(
+        actions = actions,
+        encoding = encoding,
+        files = files,
+        hash = hash,
+        output = output,
+    )

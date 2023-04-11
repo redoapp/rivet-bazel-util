@@ -1,3 +1,5 @@
+load("//util:rules.bzl", "digest")
+
 sh_binary(
     name = "service",
     srcs = ["service.sh"],
@@ -6,4 +8,10 @@ sh_binary(
 sh_binary(
     name = "item",
     srcs = ["item.sh"],
+)
+
+digest(
+    name = "service_digest",
+    srcs = [":service"],
+    encoding = "hex",
 )

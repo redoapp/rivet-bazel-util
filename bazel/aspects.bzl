@@ -1,4 +1,4 @@
-load(":providers.bzl", "create_digest")
+load("//util:providers.bzl", "create_digest")
 
 def _digest_impl(target, ctx):
     actions = ctx.actions
@@ -9,10 +9,11 @@ def _digest_impl(target, ctx):
     if "digest" in target[OutputGroupInfo]:
         return []
 
-    digest = create_digest(
+    digest = actions.declare_file("%s.digest" % name)
+    create_digest(
         actions = actions,
         hash = hash,
-        name = name,
+        output = digest,
         runfiles = bin.default_runfiles,
     )
 
