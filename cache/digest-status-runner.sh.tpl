@@ -12,5 +12,5 @@ source "${RUNFILES_DIR:-/dev/null}/$f" 2>/dev/null || \
 # --- end runfiles.bash initialization v2 ---
 
 tmp="$(mktemp)" 
-"$(rlocation %{content})" | "$(rlocation %{store})" "$(cat "$(rlocation %{key})")" > "$tmp"
+"$(rlocation %{content})" | "$(rlocation %{store})" %{target}/"$(cat "$(rlocation %{key})")" > "$tmp"
 exec mv "$tmp" "$BUILD_WORKSPACE_DIRECTORY"/%{output}

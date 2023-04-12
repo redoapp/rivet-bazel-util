@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-mkdir -p ~/.test
-file=~/.test/"${1//[^A-Za-z0-9._-]/_}"
+file=~/.test/"$1"
+mkdir -p "$(dirname "$file")"
 if [ -f "$file" ]; then
     cat > /dev/null
     exec cat "$file"

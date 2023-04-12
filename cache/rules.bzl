@@ -20,6 +20,7 @@ def _cache_src_impl(ctx):
     elif label.package:
         output = "%s/%s" % (label.package, output)
 
+    print(ctx.workspace_name)
     executable = actions.declare_file(name)
     actions.expand_template(
         is_executable = True,
@@ -29,6 +30,7 @@ def _cache_src_impl(ctx):
             "%{key}": shell.quote(runfile_path(workspace, key)),
             "%{output}": shell.quote(output),
             "%{store}": shell.quote(runfile_path(workspace, store)),
+            "%{target}": shell.quote("%s/%s/%s" % (workspace, label.package or "_", name)),
         },
         template = runner,
     )
