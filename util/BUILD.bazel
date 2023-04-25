@@ -1,0 +1,1 @@
+exports_files(["digest-binary-runner.sh.tpl"])
