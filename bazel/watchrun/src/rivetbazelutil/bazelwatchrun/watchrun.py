@@ -62,7 +62,8 @@ def _watch(
                             break
             try:
                 os.killpg(process.pid, signal.SIGTERM)
-            except ProcessLookupError:
+            except (PermissionError, ProcessLookupError):
+                # macOS raises PermissionError for zombie processes
                 pass
 
 
