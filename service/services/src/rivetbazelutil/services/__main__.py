@@ -41,10 +41,12 @@ collect_services(args.services or ["default"])
 
 print("Services", *services, file=stderr)
 
-watchrun_cmd = ["bazel-watchrun"] + \
-    [f"--bazel={arg}" for arg in args.bazel_args] + \
-    [f"--ibazel-arg={arg}" for arg in args.ibazel_args] + \
-    [f"--alias={target}={name}" for name, target in services.items()] + \
-    list(sorted(services.values()))
+watchrun_cmd = (
+    ["bazel-watchrun"]
+    + [f"--bazel={arg}" for arg in args.bazel_args]
+    + [f"--ibazel-arg={arg}" for arg in args.ibazel_args]
+    + [f"--alias={target}={name}" for name, target in services.items()]
+    + list(sorted(services.values()))
+)
 
 execv(RUNFILES.Rlocation("rivet_bazel_util/bazel/watchrun/bin"), watchrun_cmd)
